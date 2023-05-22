@@ -113,27 +113,28 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
      * @param n 繰り上げ返済を実施した返済回
      */
     private void prepaymentReducePrincipal(int n) {
-        PaymentRecord prev = table[n++];
-        PaymentRecord r = table[n];
-        long newMonthlyAmount = getMonthlyPayment(n, r.getRate(), prev.getBalance());
-        for (int i = n; i < loanInfo.installments; i++) {
+        PaymentRecord prev, r;
+        long newMonthlyAmount = 0;
+        for (int i = n + 1; i < loanInfo.installments; i++) {
             prev = table[i - 1];
             r = table[i];
+            if (prev.getPrepayment() > 0)
+            	newMonthlyAmount = getMonthlyPayment(i, r.getRate(), prev.getBalance());
             long interest = Math.round((double)(prev.getBalance()) * r.getRate() / 12.0D);
             r.setInterest(interest);
             long newPrincipal = newMonthlyAmount - interest;
             if (newPrincipal > prev.getBalance())
                 newPrincipal = prev.getBalance();
             r.setPrincipal(newPrincipal);
-            r.setTotal(r.getPrincipal() + r.getInterest());
-            r.setBalance(prev.getBalance() - newPrincipal);
+            r.setTotal(r.getPrincipal() + r.getInterest() + r.getPrepayment());
+            r.setBalance(prev.getBalance() - newPrincipal - r.getPrepayment());
         }
     }
 
     /**
      * 繰り上げ返済処理(返済期間短縮型)<br>
-     * 支払月額は変更せずにそのまま計算を続ける。支払回数が少なくなる。
-     * 
+     * 元金は減らすが支払月額は変更しない。繰り上げ額次第で返済回数が少なくなる。
+     *
      * @param n 繰り上げ返済を実施した返済回
      */
     private void prepaymentShortenDuration(int n) {
@@ -147,8 +148,8 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
             if (newPrincipal > prev.getBalance())
                 newPrincipal = prev.getBalance();
             r.setPrincipal(newPrincipal);
-            r.setTotal(r.getPrincipal() + r.getInterest());
-            r.setBalance(prev.getBalance() - newPrincipal);
+            r.setTotal(r.getPrincipal() + r.getInterest() + r.getPrepayment());
+            r.setBalance(prev.getBalance() - newPrincipal - r.getPrepayment());
         }
     }
 
@@ -165,22 +166,22 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
         if (loanInfo.rateType == RateType.FIXED)
             throw new IllegalArgumentException("Rate is fixed.");
 
-        long monthlyPayment = initialMonthlyPayment;
+        long monthlyPayment = (n == 0) ? initialMonthlyPayment : (table[n - 1].getPrincipal() + table[n - 1].getInterest());
         for (int i = n; i < loanInfo.installments; i++) {
             long balance = (i == 0) ? loanInfo.amount : table[i - 1].getBalance();
+            PaymentRecord r = table[i];
+            r.setRate(newRate);
             // 5年に一回返済額を変更
             // 新しい額は前回の1.25倍が上限
             if (i >= 60 && i % 60 == 0) {
                 long previousMonthly = monthlyPayment;
-                monthlyPayment = getMonthlyPayment(n, newRate, balance);
+                monthlyPayment = getMonthlyPayment(i, r.getRate(), balance);
                 if (Math.round((double)previousMonthly * 1.25D) < monthlyPayment)
                     monthlyPayment = Math.round((double)previousMonthly * 1.25D);
                 else if (previousMonthly > monthlyPayment)
                     monthlyPayment = previousMonthly;
             }
-            PaymentRecord r = table[i];
-            r.setRate(newRate);
-            long interest = Math.round((double)(balance) * newRate / 12.0D);
+            long interest = Math.round((double)balance * r.getRate() / 12.0D);
             if (interest > monthlyPayment) {
                 /* 未払い利息発生 */
                 r.setInterest(monthlyPayment);
@@ -190,11 +191,21 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
                 r.setBalance(balance);
             }
             else {
-                r.setInterest(interest);
-                r.setPrincipal(monthlyPayment - interest);
-                r.setAccruedInterest(0);
-                r.setTotal(monthlyPayment);
-                r.setBalance(balance - r.getPrincipal());
+            	PaymentRecord prev = table[i - 1];
+            	if (prev.getBalance() < monthlyPayment) {
+	                r.setInterest(interest);
+	                r.setPrincipal(prev.getBalance());
+	                r.setAccruedInterest(0);
+	                r.setTotal(prev.getBalance() + interest);
+	                r.setBalance(balance - r.getPrincipal() - r.getPrepayment());
+            	}
+            	else {
+	                r.setInterest(interest);
+	                r.setPrincipal(monthlyPayment - interest);
+	                r.setAccruedInterest(0);
+	                r.setTotal(monthlyPayment);
+	                r.setBalance(balance - r.getPrincipal() - r.getPrepayment());
+            	}
             }
         }
     }

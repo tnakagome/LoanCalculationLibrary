@@ -76,11 +76,47 @@ public class EqualPrincipalPaymentTableTest extends TablePrinter {
     }
 
     @Test
+    public void testMultiplePrepaymentAmount() {
+        EqualPrincipalPayment table = new EqualPrincipalPayment(loanInfo);
+        table.prepayment(36, 1000000);
+        table.prepayment(24, 1000000);
+        assertEquals(66259, table.get(419).getPrincipal());
+    }
+
+    @Test
+    public void testMultiplePrepaymentDuration() {
+        LoanInfo loan = new LoanInfo(30000000, 35, 0, 0.00775, RateType.VARIABLE,
+                PaymentType.EQUAL_PRINCIPAL_PAYMENT, PrepaymentType.DURATION);
+        EqualPrincipalPayment table = new EqualPrincipalPayment(loan);
+        table.prepayment(36, 1000000);
+        table.prepayment(24, 1000000);
+        assertEquals(71261, table.get(391).getPrincipal());
+    }
+
+    @Test
     public void testChangeRate1() {
         EqualPrincipalPayment table = new EqualPrincipalPayment(loanInfo);
         table.changeRate(12, 0.03D);
         assertEquals(71429, table.get(12).getPrincipal());
         assertEquals(72857, table.get(12).getInterest());
         assertEquals(144286, table.get(12).getTotal());
+    }
+
+    @Test
+    public void testMultipleRateChange1() {
+        EqualPrincipalPayment table = new EqualPrincipalPayment(loanInfo);
+        table.changeRate(12, 0.01D);
+        table.changeRate(24, 0.02D);
+        assertEquals(71,368, table.get(419).getTotal());
+        assertEquals(0, table.get(419).getBalance());
+    }
+
+    @Test
+    public void testMultipleRateChange2() {
+        EqualPrincipalPayment table = new EqualPrincipalPayment(loanInfo);
+        table.changeRate(24, 0.02D);
+        table.changeRate(12, 0.01D); // この回以降最終回まで1%で上書きされるので上の行の2%はなかったことになる
+        assertEquals(71308, table.get(419).getTotal());
+        assertEquals(0, table.get(419).getBalance());
     }
 }

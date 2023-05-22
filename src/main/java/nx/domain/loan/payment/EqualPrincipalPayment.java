@@ -40,7 +40,7 @@ public class EqualPrincipalPayment extends AbstractPaymentTable {
 
     /**
      * n回目の返済情報を作成
-     * 
+     *
      * @param n 返済回。初回は0
      * @return PaymentRecord 返済情報
      */
@@ -101,24 +101,26 @@ public class EqualPrincipalPayment extends AbstractPaymentTable {
      * @param n 繰り上げ返済を実施した返済回
      */
     private void prepaymentReducePrincipal(final int n) {
-        long newPrincipal = Math.round((double)(table[n].getBalance()) / (loanInfo.installments - (n + 1)));
+        long newPrincipal = 0;
         for (int i = n + 1; i < loanInfo.installments; i++) {
             PaymentRecord prev = table[i - 1];
             PaymentRecord r = table[i];
+            if (prev.getPrepayment() > 0)
+                newPrincipal = Math.round((double)(prev.getBalance()) / (loanInfo.installments - i));
             if (newPrincipal > prev.getBalance())
                 newPrincipal = prev.getBalance();
             r.setPrincipal(newPrincipal);
-            final long interest = Math.round((double)(table[i - 1].getBalance()) * (r.getRate() / 12.0D));
+            final long interest = Math.round((double)(prev.getBalance()) * (r.getRate() / 12.0D));
             r.setInterest(interest);
-            r.setTotal(newPrincipal + interest);
-            r.setBalance(table[i - 1].getBalance() - newPrincipal);
+            r.setTotal(newPrincipal + interest + r.getPrepayment());
+            r.setBalance(prev.getBalance() - newPrincipal - r.getPrepayment());
         }
     }
 
     /**
      * 繰り上げ返済処理(返済期間短縮型)<br>
      * 元金は減らすが支払月額は変更しない。繰り上げ額次第で返済回数が少なくなる。
-     * 
+     *
      * @param n 繰り上げ返済を実施した返済回
      */
     private void prepaymentShortenDuration(final int n) {
@@ -129,8 +131,8 @@ public class EqualPrincipalPayment extends AbstractPaymentTable {
                 r.setPrincipal(prev.getBalance());
             long interest = Math.round((double)(prev.getBalance()) * r.getRate() / 12.0D);
             r.setInterest(interest);
-            r.setTotal(r.getPrincipal() + interest);
-            r.setBalance(prev.getBalance() - r.getPrincipal());
+            r.setTotal(r.getPrincipal() + interest + r.getPrepayment());
+            r.setBalance(prev.getBalance() - r.getPrincipal() - r.getPrepayment());
         }
     }
 
@@ -143,10 +145,9 @@ public class EqualPrincipalPayment extends AbstractPaymentTable {
             PaymentRecord r = table[i];
             long balance = (i == 0) ? loanInfo.amount : table[i - 1].getBalance();
             r.setRate(newRate);
-            long interest = Math.round((double)(balance) * newRate / 12.0D);
+            long interest = Math.round((double)balance * newRate / 12.0D);
             r.setInterest(interest);
-            r.setTotal(r.getPrincipal() + interest);
+            r.setTotal(r.getPrincipal() + interest + r.getPrepayment());
         }
-        
     }
 }

@@ -119,4 +119,13 @@ public class EqualPrincipalPaymentTableTest extends TablePrinter {
         assertEquals(71308, table.get(419).getTotal());
         assertEquals(0, table.get(419).getBalance());
     }
+
+    @Test
+    public void testPrepaymentMoreThanBalance() {
+        EqualPrincipalPayment table = new EqualPrincipalPayment(loanInfo);
+        table.prepayment(417, 200000);
+        assertEquals(142678, table.get(417).getPrepayment());
+        assertEquals(214245, table.get(417).getTotal());
+        assertEquals(0, table.get(418).getPrincipal());
+    }
 }

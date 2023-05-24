@@ -26,7 +26,6 @@ public class ConstantPaymentSimpleTest extends TablePrinter {
         table.changeRate(12, 0.01D);
         table.changeRate(24, 0.02D);
         table.prepayment(60, 1000000);
-        printTable(loanInfo, table);
         assertEquals(84600, table.get(12).getTotal());
         assertEquals(78465, table.get(400).getBalance());
     }

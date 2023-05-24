@@ -101,4 +101,14 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     	assertEquals(99550, table.get(419).getTotal());
     	assertEquals(0, table.get(419).getBalance());
     }
+
+    @Test
+    public void testPrepaymentMoreThanBalance() {
+    	ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
+        table.prepayment(417, 200000);
+        assertEquals(163191, table.get(417).getPrepayment());
+        assertEquals(244767, table.get(417).getTotal());
+        assertEquals(0, table.get(417).getBalance());
+        assertEquals(0, table.get(418).getPrincipal());
+    }
 }

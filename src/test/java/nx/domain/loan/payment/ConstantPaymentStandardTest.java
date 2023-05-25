@@ -9,6 +9,7 @@ import nx.domain.loan.model.LoanInfo;
 import nx.domain.loan.model.LoanInfo.PaymentType;
 import nx.domain.loan.model.LoanInfo.PrepaymentType;
 import nx.domain.loan.model.LoanInfo.RateType;
+import nx.domain.loan.model.LoanResult;
 
 public class ConstantPaymentStandardTest extends TablePrinter {
     LoanInfo loanInfo;
@@ -64,7 +65,7 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     
     @Test
     public void testMultiplePrepaymentAmount() {
-    	ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
+        ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.prepayment(36, 1000000);
         table.prepayment(24, 1000000);
         assertEquals(75759, table.get(419).getTotal());
@@ -96,19 +97,28 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     @Test
     public void testMultipleRateChange1() {
         ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
-    	table.changeRate(24, 0.01);
-    	table.changeRate(36, 0.02);
-    	assertEquals(99550, table.get(419).getTotal());
-    	assertEquals(0, table.get(419).getBalance());
+        table.changeRate(24, 0.01);
+        table.changeRate(36, 0.02);
+        assertEquals(99550, table.get(419).getTotal());
+        assertEquals(0, table.get(419).getBalance());
     }
 
     @Test
     public void testPrepaymentMoreThanBalance() {
-    	ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
+        ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.prepayment(417, 200000);
         assertEquals(163191, table.get(417).getPrepayment());
         assertEquals(244767, table.get(417).getTotal());
         assertEquals(0, table.get(417).getBalance());
         assertEquals(0, table.get(418).getPrincipal());
+    }
+
+    @Test
+    public void testExcessiveInterestHike() {
+        ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
+        table.changeRate(24, 0.06);
+        LoanResult result = table.getResult();
+        assertEquals(40876283, result.getInterest());
+        assertEquals(5524164, result.getAccruedInterest());
     }
 }

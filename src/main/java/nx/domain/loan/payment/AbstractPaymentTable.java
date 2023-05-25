@@ -3,6 +3,7 @@ package nx.domain.loan.payment;
 import java.util.Iterator;
 
 import nx.domain.loan.model.LoanInfo;
+import nx.domain.loan.model.LoanResult;
 import nx.domain.loan.model.PaymentRecord;
 
 /**
@@ -40,6 +41,27 @@ public abstract class AbstractPaymentTable implements Iterable<PaymentRecord> {
      */
     public Iterator<PaymentRecord> iterator() {
         return new TableIterator(this);
+    }
+
+    /**
+     * 償還表から結果を集計
+     *
+     * @see nx.domain.loan.model.LoanResult
+     * @return LoanResultオブジェクト
+     */
+    public LoanResult getResult() {
+        LoanResult result = new LoanResult();
+        for (PaymentRecord r : table) {
+            if (r == null) {
+                throw new IllegalStateException("PaymentRecord is null.");
+            }
+            result.addPrincipal(r.getPrincipal());
+            result.addInterest(r.getInterest());
+            result.addPrepayment(r.getPrepayment());
+            result.addAccruedInterest(r.getAccruedInterest());
+        }
+        result.setBalance(table[loanInfo.installments - 1].getBalance());
+        return result;
     }
 
     /**

@@ -3,12 +3,14 @@ package nx.domain.loan.sample;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
 import nx.domain.loan.model.LoanInfo;
 import nx.domain.loan.model.LoanInfo.PaymentType;
 import nx.domain.loan.model.LoanInfo.PrepaymentType;
 import nx.domain.loan.model.LoanInfo.RateType;
+import nx.domain.loan.model.LoanResult;
 import nx.domain.loan.model.PaymentRecord;
 import nx.domain.loan.payment.AbstractPaymentTable;
 import nx.domain.loan.payment.ConstantPaymentStandard;
@@ -17,7 +19,7 @@ import nx.domain.loan.payment.ConstantPaymentStandard;
  * 元利均等の償還表を出力
  *
  * 実行方法
- * java -cp target/libloan-1.0.0-jar-with-dependencies.jar -Dfile.encoding=UTF-8 nx.domain.loan.sample.ConstantPaymentCalculator
+ * java -cp target/libloan-1.0.0-jar-with-dependencies.jar nx.domain.loan.sample.ConstantPaymentCalculator
  */
 public class ConstantPaymentCalculator {
     private static int getAmount(final CommandLine options) throws Exception {
@@ -59,7 +61,15 @@ public class ConstantPaymentCalculator {
         .addOption("m", true, "返済期間(月)")
         .addOption("r", true, "利率(0.01=1%)");
         CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args);
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
+        }
+        catch (Exception e) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("ConstantPaymentCalculator", options);
+            return;
+        }
 
         int    amount       = getAmount(cmd);
         int    years        = getYears(cmd);
@@ -74,8 +84,13 @@ public class ConstantPaymentCalculator {
                 PaymentType.CONSTANT_PAYMENT, PrepaymentType.DURATION);
         AbstractPaymentTable table = new ConstantPaymentStandard(loanInfo);
         for (PaymentRecord r : table) {
-            System.out.format("%3d回  元本 %,d円  利息 %,d円  合計 %,d円  元本残高 %,d円\n",
+            System.out.format("%3d回  元金 %,d円  利息 %,d円  合計 %,d円  残債 %,d円\n",
                     r.getIndex() + 1, r.getPrincipal(), r.getInterest(), r.getTotal(), r.getBalance());
         }
+        LoanResult result = table.getResult();
+        System.out.format("元金合計 %,11d円\n", result.getPrincipal());
+        System.out.format("利息合計　%,11d円\n", result.getInterest());
+        System.out.format("総支払額　%,11d円\n", result.getTotal());
+        System.out.format("残債 \t%,11d円\n", result.getBalance());
     }
 }

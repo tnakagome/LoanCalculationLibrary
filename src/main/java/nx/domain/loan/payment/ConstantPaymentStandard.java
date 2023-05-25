@@ -119,7 +119,7 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
             prev = table[i - 1];
             r = table[i];
             if (prev.getPrepayment() > 0)
-            	newMonthlyAmount = getMonthlyPayment(i, r.getRate(), prev.getBalance());
+                newMonthlyAmount = getMonthlyPayment(i, r.getRate(), prev.getBalance());
             long interest = Math.round((double)(prev.getBalance()) * r.getRate() / 12.0D);
             r.setInterest(interest);
             long newPrincipal = newMonthlyAmount - interest;
@@ -191,21 +191,21 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
                 r.setBalance(balance);
             }
             else {
-            	PaymentRecord prev = table[i - 1];
-            	if (prev.getBalance() < monthlyPayment) {
-	                r.setInterest(interest);
-	                r.setPrincipal(prev.getBalance());
-	                r.setAccruedInterest(0);
-	                r.setTotal(prev.getBalance() + interest);
-	                r.setBalance(balance - r.getPrincipal() - r.getPrepayment());
-            	}
-            	else {
-	                r.setInterest(interest);
-	                r.setPrincipal(monthlyPayment - interest);
-	                r.setAccruedInterest(0);
-	                r.setTotal(monthlyPayment);
-	                r.setBalance(balance - r.getPrincipal() - r.getPrepayment());
-            	}
+                PaymentRecord prev = table[i - 1];
+                if (prev.getBalance() < monthlyPayment) {
+                    r.setInterest(interest);
+                    r.setPrincipal(prev.getBalance());
+                    r.setAccruedInterest(0);
+                    r.setTotal(prev.getBalance() + interest);
+                    r.setBalance(balance - r.getPrincipal() - r.getPrepayment());
+                }
+                else {
+                    r.setInterest(interest);
+                    r.setPrincipal(monthlyPayment - interest);
+                    r.setAccruedInterest(0);
+                    r.setTotal(monthlyPayment);
+                    r.setBalance(balance - r.getPrincipal() - r.getPrepayment());
+                }
             }
         }
     }

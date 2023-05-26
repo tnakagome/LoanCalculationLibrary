@@ -88,9 +88,10 @@ public class ConstantPaymentCalculator {
                     r.getIndex() + 1, r.getPrincipal(), r.getInterest(), r.getTotal(), r.getBalance());
         }
         LoanResult result = table.getResult();
+        System.out.format("借入額　 %,11d円\n", loanInfo.amount);
         System.out.format("元金合計 %,11d円\n", result.getPrincipal());
-        System.out.format("利息合計　%,11d円\n", result.getInterest());
-        System.out.format("総支払額　%,11d円\n", result.getTotal());
-        System.out.format("残債 \t%,11d円\n", result.getBalance());
+        System.out.format("利息合計 %,11d円\n", result.getInterest());
+        System.out.format("総支払額 %,11d円\n", result.getTotal());
+        System.out.format("残債　　 %,11d円\n", result.getBalance());
     }
 }

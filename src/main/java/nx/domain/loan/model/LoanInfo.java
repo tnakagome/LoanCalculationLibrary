@@ -7,7 +7,7 @@ public class LoanInfo {
     /**
      * 借入額
      */
-    public final int amount;
+    public final long amount;
 
     /**
      * 返済期間のうち年数
@@ -86,7 +86,7 @@ public class LoanInfo {
      */
     public final PrepaymentType prepaymentType;
 
-    public LoanInfo(final int amount, final int years, final int months,
+    public LoanInfo(final long amount, final int years, final int months,
                     final double annualRate, final RateType rateType,
                     final PaymentType paymentType,
                     final PrepaymentType prepaymentType) {

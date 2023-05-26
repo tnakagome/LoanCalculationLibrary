@@ -22,12 +22,12 @@ import nx.domain.loan.payment.ConstantPaymentStandard;
  * java -cp target/libloan-1.0.0-jar-with-dependencies.jar nx.domain.loan.sample.ConstantPaymentCalculator
  */
 public class ConstantPaymentCalculator {
-    private static int getAmount(final CommandLine options) throws Exception {
+    private static long getAmount(final CommandLine options) throws Exception {
         final String amount = options.getOptionValue('a');
         if (amount == null)
             return 30_000_000;
         else
-            return Integer.parseInt(amount);
+            return Long.parseLong(amount);
     }
 
     private static int getYears(final CommandLine options) throws Exception {
@@ -71,7 +71,7 @@ public class ConstantPaymentCalculator {
             return;
         }
 
-        int    amount       = getAmount(cmd);
+        long   amount       = getAmount(cmd);
         int    years        = getYears(cmd);
         int    months       = getMonths(cmd);
         double rate         = getRate(cmd);
@@ -88,7 +88,7 @@ public class ConstantPaymentCalculator {
                     r.getIndex() + 1, r.getPrincipal(), r.getInterest(), r.getTotal(), r.getBalance());
         }
         LoanResult result = table.getResult();
-        System.out.format("借入額　 %,11d円\n", loanInfo.amount);
+        System.out.format("\n借入額　 %,11d円\n", loanInfo.amount);
         System.out.format("元金合計 %,11d円\n", result.getPrincipal());
         System.out.format("利息合計 %,11d円\n", result.getInterest());
         System.out.format("総支払額 %,11d円\n", result.getTotal());

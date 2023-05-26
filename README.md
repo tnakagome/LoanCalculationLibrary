@@ -21,7 +21,7 @@ Java 1.7以上
 ##### モデル (nx.domain.loan.model)
 * LoanInfo - 借入額、利率、期間など、ローン設定時の初期条件を保持。
 * PaymentRecord - 各返済回の元金、金利、利率、繰上額、残元本などを保持。
-
+* LoanResult - ローンの集計結果。支払総額などを保持。
 
 ##### 償還表 (nx.domain.loan.payment)
 * ConstantPaymentStandard - 元利均等の償還表(5年･125%ルールあり)

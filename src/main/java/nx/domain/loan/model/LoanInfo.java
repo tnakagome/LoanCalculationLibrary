@@ -40,7 +40,19 @@ public class LoanInfo {
         /**
          * 固定金利
          */
-        FIXED
+        FIXED;
+        
+        @Override
+        public String toString() {
+            switch (this.ordinal()) {
+            case 0:
+                return "変動金利";
+            case 1:
+                return "固定金利";
+            default:
+                return "エラー";
+            }
+        }
     };
 
     /**
@@ -59,7 +71,19 @@ public class LoanInfo {
         /**
          * 元金均等
          */
-        EQUAL_PRINCIPAL_PAYMENT
+        EQUAL_PRINCIPAL_PAYMENT;
+        
+        @Override
+        public String toString() {
+            switch (this.ordinal()) {
+            case 0:
+                return "元利均等";
+            case 1:
+                return "元金均等";
+            default:
+                return "エラー";
+            }
+        }
     };
 
     /**
@@ -78,7 +102,19 @@ public class LoanInfo {
         /**
          * 返済額軽減型
          */
-        AMOUNT
+        AMOUNT;
+
+        @Override
+        public String toString() {
+            switch (this.ordinal()) {
+            case 0:
+                return "返済期間短縮型";
+            case 1:
+                return "返済額軽減型";
+            default:
+                return "エラー";
+            }
+        }
     };
 
     /**

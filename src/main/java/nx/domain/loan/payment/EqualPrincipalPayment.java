@@ -29,9 +29,9 @@ public class EqualPrincipalPayment extends AbstractPaymentTable {
         for (int i = 0; i < loanInfo.installments; i++) {
             table[i] = createRecord(i);
         }
-        // 最終回の残元本がマイナスの場合は調整
+        // 最終回の残元金が0でない場合は0になるように調整
         PaymentRecord r = table[loanInfo.installments - 1];
-        if (r.getBalance() < 0) {
+        if (r.getBalance() != 0) {
             r.setPrincipal(r.getPrincipal() + r.getBalance());
             r.setTotal(r.getTotal() + r.getBalance());
             r.setBalance(0);

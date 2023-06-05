@@ -7,9 +7,9 @@ import nx.domain.loan.model.PaymentRecord;
 public class TableIterator implements Iterator<PaymentRecord> {
     private final AbstractPaymentTable table;
     private int position;
+
     public TableIterator(AbstractPaymentTable table) {
         this.table = table;
-        this.position = 0;
     }
 
     @Override

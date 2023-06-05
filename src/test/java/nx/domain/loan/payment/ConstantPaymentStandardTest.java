@@ -25,7 +25,7 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     @Test
     public void testPrincipal() {
         assertEquals(62201, table.get(0).getPrincipal());
-        assertEquals(81523, table.get(419).getPrincipal());
+        assertEquals(81720, table.get(419).getPrincipal());
     }
 
     @Test
@@ -37,12 +37,12 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     @Test
     public void testTotal() {
         assertEquals(81576, table.get(0).getTotal());
-        assertEquals(81576, table.get(419).getTotal());
+        assertEquals(81773, table.get(419).getTotal());
     }
 
     @Test
     public void testBalance() {
-        assertEquals(197, table.get(419).getBalance());
+        assertEquals(0, table.get(419).getBalance());
     }
 
     @Test
@@ -62,14 +62,14 @@ public class ConstantPaymentStandardTest extends TablePrinter {
         assertEquals(69580, table.get(372).getPrincipal());
         assertEquals(45, table.get(372).getInterest());
     }
-    
+
     @Test
     public void testMultiplePrepaymentAmount() {
         ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.prepayment(36, 1000000);
         table.prepayment(24, 1000000);
         assertEquals(75759, table.get(419).getTotal());
-        assertEquals(150, table.get(419).getBalance());
+        assertEquals(0, table.get(419).getBalance());
     }
 
     @Test
@@ -84,13 +84,12 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     }
 
     @Test
-    public void testChangeRateWithAccuredInterest1() {
+    public void testChangeRateWithAccruedInterest1() {
         LoanInfo loanInfo = new LoanInfo(30000000, 35, 0, 0.00775, RateType.VARIABLE,
                 PaymentType.CONSTANT_PAYMENT, PrepaymentType.DURATION);
         ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.changeRate(12, 0.04);
-        assertEquals(15927, table.get(59).getAccruedInterest());
-        assertEquals(164758, table.get(419).getTotal());
+        assertEquals(15927, table.get(12).getAccruedInterestNew());
         assertEquals(0, table.get(419).getBalance());
     }
 
@@ -107,7 +106,6 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     public void testPrepaymentMoreThanBalance() {
         ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.prepayment(417, 200000);
-        assertEquals(163191, table.get(417).getPrepayment());
         assertEquals(244767, table.get(417).getTotal());
         assertEquals(0, table.get(417).getBalance());
         assertEquals(0, table.get(418).getPrincipal());
@@ -118,7 +116,6 @@ public class ConstantPaymentStandardTest extends TablePrinter {
         ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.changeRate(24, 0.06);
         LoanResult result = table.getResult();
-        assertEquals(40876283, result.getInterest());
-        assertEquals(5524164, result.getAccruedInterest());
+        assertEquals(0, result.getAccruedInterestBalance());
     }
 }

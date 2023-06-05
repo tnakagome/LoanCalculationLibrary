@@ -31,7 +31,7 @@ public class PaymentRecord {
     private long total;
 
     /**
-     * 今回の支払い後の残元本
+     * 今回の支払い後の残元金
      */
     private long balance;
 
@@ -41,9 +41,19 @@ public class PaymentRecord {
     private long prepayment;
 
     /**
-     * 今回の未払い利息
+     * 今回新たに発生した未払い利息
      */
-    private long accruedInterest;
+    private long accruedInterestNew;
+
+    /**
+     * 前回までの未払い利息のうち今回返済した額
+     */
+    private long accruedInterestPaid;
+
+    /**
+     * 未払い利息累計
+     */
+    private long accruedInterestBalance;
 
     /**
      * 返済回
@@ -69,14 +79,14 @@ public class PaymentRecord {
     /**
      * 今回の年利を設定
      *
-     * @param rate 利率
+     * @param rate 利率(年利)
      */
     public void setRate(double rate) {
         this.rate = rate;
     }
 
     /**
-     * @return 今回支払う元金
+     * @return 今回支払う元金額
      */
     public long getPrincipal() {
         return principal;
@@ -85,14 +95,14 @@ public class PaymentRecord {
     /**
      * 今回の元金を設定
      *
-     * @param principal 元金
+     * @param amount 元金額
      */
-    public void setPrincipal(long principal) {
-        this.principal = principal;
+    public void setPrincipal(long amount) {
+        this.principal = amount;
     }
 
     /**
-     * @return 今回支払う利息
+     * @return 今回支払う利息額
      */
     public long getInterest() {
         return interest;
@@ -101,10 +111,10 @@ public class PaymentRecord {
     /**
      * 今回の利息を設定
      *
-     * @param interest 利息
+     * @param amount 利息額
      */
-    public void setInterest(long interest) {
-        this.interest = interest;
+    public void setInterest(long amount) {
+        this.interest = amount;
     }
 
     /**
@@ -117,14 +127,14 @@ public class PaymentRecord {
     /**
      * 今回の支払額合計を設定
      *
-     * @param total 支払額合計
+     * @param amount 支払額合計
      */
-    public void setTotal(long total) {
-        this.total = total;
+    public void setTotal(long amount) {
+        this.total = amount;
     }
 
     /**
-     * @return 今回の支払い後の残額
+     * @return 今回の支払い後の元金残額
      */
     public long getBalance() {
         return balance;
@@ -133,10 +143,10 @@ public class PaymentRecord {
    /**
     * 今回元金、利息等を支払った後に残る元金の額を設定
     *
-    * @param balance 残額
+    * @param amount 元金残額
     */
-    public void setBalance(long balance) {
-        this.balance = balance;
+    public void setBalance(long amount) {
+        this.balance = amount;
     }
 
     /**
@@ -149,25 +159,70 @@ public class PaymentRecord {
     /**
      * 今回の繰り上げ返済額を設定
      *
-     * @param prepayment 繰り上げ返済額
+     * @param amount 繰り上げ返済額
      */
-    public void setPrepayment(long prepayment) {
-        this.prepayment = prepayment;
+    public void setPrepayment(long amount) {
+        this.prepayment = amount;
     }
 
     /**
-     * @return 今回の未払い利息
+     * @return 今回新たに発生した未払い利息額
      */
-    public long getAccruedInterest() {
-        return accruedInterest;
+    public long getAccruedInterestNew() {
+        return accruedInterestNew;
     }
 
     /**
-     * 今回の未払い利息を設定
+     * 今回新たに発生した未払い利息を設定
      *
-     * @param accruedInterest 未払い利息
+     * @param amount 未払い利息額
      */
-    public void setAccruedInterest(long accruedInterest) {
-        this.accruedInterest = accruedInterest;
+    public void setAccruedInterestNew(long amount) {
+        this.accruedInterestNew = amount;
+    }
+
+    /**
+     * @return 今回返済した未払い利息額
+     */
+    public long getAccruedInterestPaid() {
+        return accruedInterestPaid;
+    }
+
+    /**
+     * 今回返済した未払い利息を設定
+     *
+     * @param amount 未払い利息額
+     */
+    public void setAccruedInterestPaid(long amount) {
+        this.accruedInterestPaid = amount;
+    }
+
+    /**
+     * @return 未払い利息累計
+     */
+    public long getAccruedInterestBalance() {
+        return accruedInterestBalance;
+    }
+
+    /**
+     * 今回の未払い利息累計を設定
+     *
+     * @param amount 未払い利息累計
+     */
+    public void setAccruedInterestBalance(long amount) {
+        this.accruedInterestBalance = amount;
+    }
+
+    /**
+     * 繰上額と利率以外の項目を初期化
+     */
+    public void reset() {
+        accruedInterestNew = 0;
+        accruedInterestPaid = 0;
+        accruedInterestBalance = 0;
+        balance = 0;
+        interest = 0;
+        principal = 0;
+        total = 0;
     }
 }

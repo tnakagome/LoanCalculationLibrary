@@ -14,6 +14,9 @@ public abstract class AbstractPaymentTable implements Iterable<PaymentRecord> {
     protected final PaymentRecord table[];
 
     protected AbstractPaymentTable(final LoanInfo loanInfo) {
+        if (loanInfo == null)
+            throw new IllegalArgumentException("loanInfo cannot be null");
+
         this.loanInfo = loanInfo;
         this.table = new PaymentRecord[loanInfo.installments];
     }
@@ -58,9 +61,10 @@ public abstract class AbstractPaymentTable implements Iterable<PaymentRecord> {
             result.addPrincipal(r.getPrincipal());
             result.addInterest(r.getInterest());
             result.addPrepayment(r.getPrepayment());
-            result.addAccruedInterest(r.getAccruedInterest());
+            result.addAccruedInterestPaid(r.getAccruedInterestPaid());
         }
         result.setBalance(table[loanInfo.installments - 1].getBalance());
+        result.setAccruedInterestBalance(table[loanInfo.installments - 1].getAccruedInterestBalance());
         return result;
     }
 

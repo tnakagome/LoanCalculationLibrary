@@ -26,22 +26,21 @@ public class LoanResult {
     private long total;
 
     /**
-     * 残元金
+     * 元金残高
      */
     private long balance;
 
     /**
-     * 未払い利息が発生した場合、その合計
+     * 支払った未払い利息
      */
-    private long accruedInterest;
+    private long accruedInterestPaid;
+
+    /**
+     * 未払い利息残高
+     */
+    private long accruedInterestBalance;
 
     public LoanResult() {
-        principal       = 0;
-        interest        = 0;
-        prepayment      = 0;
-        total           = 0;
-        balance         = 0;
-        accruedInterest = 0;
     }
 
     public void addPrincipal(final long principal) {
@@ -63,10 +62,14 @@ public class LoanResult {
         this.balance = balance;
     }
 
-    public void addAccruedInterest(final long accruedInterest) {
-        this.accruedInterest += accruedInterest;
+    public void addAccruedInterestPaid(final long accruedInterest) {
+        this.accruedInterestPaid += accruedInterest;
+        this.total               += accruedInterest;
     }
 
+    public void setAccruedInterestBalance(final long accruedInterestBalance) {
+        this.accruedInterestBalance = accruedInterestBalance;
+    }
     /**
      * @return 支払った元金の合計
      */
@@ -88,12 +91,17 @@ public class LoanResult {
     public long getTotal() { return total; }
 
     /**
-     * @return 残元金
+     * @return 元金残高
      */
     public long getBalance() { return balance; }
 
     /**
-     * @return 未払い利息の合計
+     * @return 支払った未払い利息の合計
      */
-    public long getAccruedInterest() { return accruedInterest; }
+    public long getAccruedInterestPaid() { return accruedInterestPaid; }
+
+    /**
+     * @return 未払い利息の残高
+     */
+    public long getAccruedInterestBalance() { return accruedInterestBalance; }
 }

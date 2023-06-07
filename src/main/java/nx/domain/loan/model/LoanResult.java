@@ -55,7 +55,6 @@ public class LoanResult {
 
     public void addPrepayment(final long prepayment) {
         this.prepayment += prepayment;
-        this.total      += prepayment;
     }
 
     public void setBalance(final long balance) {

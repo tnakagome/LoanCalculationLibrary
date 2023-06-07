@@ -9,7 +9,8 @@ import nx.domain.loan.model.PaymentRecord;
 /**
  * 元利均等方式による償還表<br>
  * 5年・125%ルール適用あり<br>
- * Level Paymentとも言われる
+ * 返済額の充当順序 : 1. 未払利息 2. 約定利息 3. 元金<br>
+ * Level Paymentとも呼ばれる
  */
 public class ConstantPaymentStandard extends AbstractPaymentTable {
     protected final int  RATE_CHANGE_INTERVAL = 60;
@@ -185,7 +186,6 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
             // 未払い利息処理
             if (accruedInterestBalance > 0) {
                 thisMonthPayment = accruedInterest(r, thisMonthPayment, accruedInterestBalance);
-                accruedInterestBalance = r.getAccruedInterestBalance();
             }
 
             // 元金と利息の処理
@@ -245,10 +245,12 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
                 r.setBalance(0);
                 // 繰上返済額は使った分だけに再設定
                 r.setPrepayment(used + balance);
+                r.setPrincipal(r.getPrepayment());
             }
             else {
                 // 残元金のほうが多い場合は元金を減額
-                r.setBalance(r.getBalance() - prepayment);
+            	r.setPrincipal(prepayment);
+                r.setBalance(balance - prepayment);
             }
         }
     }
@@ -286,7 +288,6 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
         if (interest > amount) {
             // 未払い利息発生
             r.setInterest(amount);
-            r.setPrincipal(0);
             r.setAccruedInterestNew(interest - amount);
             r.setAccruedInterestBalance(r.getAccruedInterestBalance() + r.getAccruedInterestNew());
             amount = 0;
@@ -296,15 +297,15 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
             r.setAccruedInterestNew(0);
             amount -= interest;
             if (r.getBalance() < amount) {
-                r.setPrincipal(r.getBalance());
+                r.setPrincipal(r.getPrincipal() + r.getBalance());
                 r.setBalance(0);
             }
             else {
-                r.setPrincipal(amount);
+                r.setPrincipal(r.getPrincipal() + amount);
                 r.setBalance(r.getBalance() - amount);
             }
         }
-        long total = r.getInterest() + r.getPrincipal() + r.getPrepayment() + r.getAccruedInterestPaid();
+        long total = r.getInterest() + r.getPrincipal() + r.getAccruedInterestPaid();
         r.setTotal(total);
     }
 }

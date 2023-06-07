@@ -103,6 +103,21 @@ public class ConstantPaymentStandardTest extends TablePrinter {
     }
 
     @Test
+    public void testChangeRateWithPrepayment() {
+        ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
+        table.changeRate(24, 0.01);
+        table.changeRate(36, 0.02);
+        table.changeRate(48, 0.04);
+        table.changeRate(60, 0.03);
+        table.changeRate(72, 0.02);
+        table.changeRate(84, 0.01);
+        table.prepayment(59, 1000000);
+        table.prepayment(83, 1000000);
+        assertEquals(83098, table.get(419).getTotal());
+        assertEquals(0, table.get(419).getBalance());
+    }
+
+    @Test
     public void testPrepaymentMoreThanBalance() {
         ConstantPaymentStandard table = new ConstantPaymentStandard(loanInfo);
         table.prepayment(417, 200000);

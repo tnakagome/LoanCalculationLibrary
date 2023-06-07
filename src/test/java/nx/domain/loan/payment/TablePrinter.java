@@ -69,6 +69,10 @@ public abstract class TablePrinter {
     protected void writeTSV(final LoanInfo loanInfo, final AbstractPaymentTable table) {
         try {
             File file = new File(name.getMethodName() + ".tsv");
+            int index = 1;
+            while ((file.exists())) {
+            	file = new File(String.format("%s-%d.tsv", name.getMethodName(), index++));
+            }
             writeTSVtoFile(new PrintStream(new FileOutputStream(file)), loanInfo, table);
         }
         catch (Exception e) {
@@ -84,18 +88,18 @@ public abstract class TablePrinter {
 
         // 最終結果
         LoanResult result = table.getResult();
-        out.println("\t\t元金計\t利息計\t充当未払い利息計\t繰上額計\t返済額計\t元金残高\t\t未払い利息残高");
+        out.println("\t\t元金計\t利息計\t充当未払い利息計\t返済額計\t元金残高\t繰上額計\t\t未払い利息残高");
         out.format("\t\t%d\t%d\t%d\t%d\t%d\t%d\t\t%d\n\n",
-                result.getPrincipal(), result.getInterest(), result.getAccruedInterestPaid(), result.getPrepayment(),
-                result.getTotal(), result.getBalance(), result.getAccruedInterestBalance());
+                result.getPrincipal(), result.getInterest(), result.getAccruedInterestPaid(), result.getTotal(),
+                result.getBalance(),  result.getPrepayment(),result.getAccruedInterestBalance());
 
         // 償還表
-        out.println("返済回\t金利\t元金\t利息\t充当未払い利息\t繰上額\t支払額合計\t元金残高\t発生未払い利息\t未払い利息残高");
+        out.println("返済回\t金利\t元金\t利息\t充当未払い利息\t支払額合計\t元金残高\t繰上額\t発生未払い利息\t未払い利息残高");
         for (int i = 0; i < loanInfo.installments; i++) {
             PaymentRecord r = table.get(i);
             out.format("%d\t%.3f%%\t%,d\t%,d\t%,d\t%,d\t%,d\t%,d\t%,d\t%,d\n",
                     i+1, r.getRate() * 100, r.getPrincipal(), r.getInterest(), r.getAccruedInterestPaid(),
-                    r.getPrepayment(), r.getTotal(), r.getBalance(), r.getAccruedInterestNew(), r.getAccruedInterestBalance());
+                    r.getTotal(), r.getBalance(), r.getPrepayment(), r.getAccruedInterestNew(), r.getAccruedInterestBalance());
         }
     }
 }

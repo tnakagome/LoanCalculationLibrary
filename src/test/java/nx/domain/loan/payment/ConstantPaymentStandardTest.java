@@ -113,7 +113,7 @@ public class ConstantPaymentStandardTest extends TablePrinter {
         table.changeRate(84, 0.01);
         table.prepayment(59, 1000000);
         table.prepayment(83, 1000000);
-        assertEquals(83098, table.get(419).getTotal());
+        assertEquals(83278, table.get(419).getTotal());
         assertEquals(0, table.get(419).getBalance());
     }
 

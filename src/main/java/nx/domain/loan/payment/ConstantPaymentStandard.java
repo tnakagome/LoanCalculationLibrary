@@ -202,6 +202,7 @@ public class ConstantPaymentStandard extends AbstractPaymentTable {
             if (last.getBalance() < loanInfo.installments) {
                 // 残債が少額の場合は最終回の支払元金に加えて残債を0にする
                 last.setPrincipal(last.getPrincipal() + last.getBalance());
+                last.setTotal(last.getTotal() + last.getBalance());
                 last.setBalance(0);
             }
             else if (lastRateChange + RATE_CHANGE_INTERVAL < loanInfo.installments) {

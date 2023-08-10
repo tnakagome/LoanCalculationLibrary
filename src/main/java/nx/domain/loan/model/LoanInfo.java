@@ -61,7 +61,7 @@ public class LoanInfo {
     public final RateType rateType;
 
     /**
-     * 返済種別
+     * 返済方式
      */
     public enum PaymentType {
         /**
@@ -87,7 +87,7 @@ public class LoanInfo {
     };
 
     /**
-     * 返済種別
+     * 返済方式
      */
     public final PaymentType paymentType;
 

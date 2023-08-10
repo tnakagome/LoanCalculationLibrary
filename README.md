@@ -39,6 +39,7 @@ Java 1.7以上
 - nx.domain.loan.sample.ConstantPaymentCalculator  
   3000万円／35年／年利1%／元利均等の条件で借りた場合の償還表を出力する。  
   コマンドラインオプションにより、借入額、期間、利率を設定可能。  
+  [出力例](PaymentTableSample.txt)
 
 
 - 返済途中の利率変更や繰り上げ返済の処理方法は単体試験を参照。

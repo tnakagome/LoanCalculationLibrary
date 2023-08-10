@@ -19,7 +19,7 @@ import nx.domain.loan.payment.ConstantPaymentStandard;
  * 元利均等の償還表を出力
  *
  * 実行方法
- * java -cp target/libloan-1.0.0-jar-with-dependencies.jar nx.domain.loan.sample.ConstantPaymentCalculator
+ * java -cp target/libloan-1.0.0-jar-with-dependencies.jar -Dfile.encoding=UTF-8 nx.domain.loan.sample.ConstantPaymentCalculator
  */
 public class ConstantPaymentCalculator {
     private static long getAmount(final CommandLine options) throws Exception {
@@ -88,7 +88,13 @@ public class ConstantPaymentCalculator {
                     r.getIndex() + 1, r.getPrincipal(), r.getInterest(), r.getTotal(), r.getBalance());
         }
         LoanResult result = table.getResult();
-        System.out.format("\n借入額　 %,11d円\n", loanInfo.amount);
+        System.out.format("\n借入期間  %d年", years);
+        if (months > 0) {
+            System.out.format("%d月", months);
+        }
+        System.out.format("\n返済方式  %s\n", loanInfo.paymentType);
+        System.out.format("利率      %-3.3f%%\n", rate * 100);
+        System.out.format("借入額　 %,11d円\n", loanInfo.amount);
         System.out.format("元金合計 %,11d円\n", result.getPrincipal());
         System.out.format("利息合計 %,11d円\n", result.getInterest());
         System.out.format("総支払額 %,11d円\n", result.getTotal());

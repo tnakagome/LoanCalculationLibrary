@@ -27,7 +27,7 @@ Java 1.7以上
 ##### 償還表 (nx.domain.loan.payment)
 * ConstantPaymentStandard - 元利均等の償還表(5年･125%ルールあり)
 * ConstantPaymentSimple - 元利均等の償還表(5年･125%ルールなし)
-* EqualPrincipalPaymentTable - 元金均等の償還表
+* EqualPrincipalPayment - 元金均等の償還表
 
 ## 利用方法
 1. 条件を決めてLoanInfoを作成。
